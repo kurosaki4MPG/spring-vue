@@ -19,7 +19,7 @@ type Task = {
 }
 
 type LoadDashboardOptions = {
-  // CRUD後は通知を出すが、手動再読込では画面メッセージをリセットするための制御。
+  // CRUD後の操作通知と、再読込時のシステムメッセージ表示を制御する。
   showAlert?: boolean
   showSystemMessage?: boolean
 }
@@ -107,7 +107,7 @@ async function loadDashboard(options: LoadDashboardOptions = {}) {
 
     health.value = (await healthResponse.json()) as HealthResponse
     const loadedMessage = (await messageResponse.json()) as MessageResponse
-    // 手動再読込ではシステムメッセージを再表示せず、既存の通知欄を空に保つ。
+    // 再読込では最新のシステムメッセージを反映し、操作通知は呼び出し元で制御する。
     if (showSystemMessage) {
       message.value = loadedMessage
     }
@@ -294,7 +294,7 @@ onMounted(loadDashboard)
         </div>
       </section>
 
-      <!-- 手動再読込時は refreshDashboard で3種類とも非表示にする。 -->
+      <!-- 再読込時はシステムメッセージを表示し、成功・エラー通知をリセットする。 -->
       <p v-if="message" class="system-message">{{ message.message }}</p>
       <p v-if="error" class="alert alert--error">{{ error }}</p>
       <p v-if="notice" class="alert alert--success">{{ notice }}</p>

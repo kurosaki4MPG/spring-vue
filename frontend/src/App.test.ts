@@ -33,7 +33,7 @@ function createFetchMock(initialTasks: TestTask[] = []) {
       return jsonResponse({ status: 'ok' })
     }
 
-    // システムメッセージは初期表示で出し、手動再読込後はApp.vue側で非表示にする。
+    // システムメッセージは初期表示と手動再読込で表示し、操作通知だけをリセットする。
     if (method === 'GET' && url === '/api/message') {
       return jsonResponse({ message: 'Spring Boot backend is running.' })
     }
@@ -148,7 +148,7 @@ describe('App', () => {
     expect(wrapper.text()).toContain('追加タスク')
   })
 
-  it('再読込ではシステムメッセージ、エラー、成功通知を非表示にする', async () => {
+  it('再読込ではシステムメッセージを表示し、エラーと成功通知を非表示にする', async () => {
     vi.stubGlobal('fetch', createFetchMock())
 
     const wrapper = await mountApp()
@@ -164,7 +164,7 @@ describe('App', () => {
     await refreshButton!.trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('.system-message').exists()).toBe(false)
+    expect(wrapper.find('.system-message').text()).toBe('Spring Boot backend is running.')
     expect(wrapper.find('.alert--error').exists()).toBe(false)
     expect(wrapper.find('.alert--success').exists()).toBe(false)
   })
