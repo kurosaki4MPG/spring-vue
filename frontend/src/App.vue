@@ -122,14 +122,10 @@ async function loadDashboard(options: LoadDashboardOptions = {}) {
 }
 
 async function refreshDashboard() {
-  // 再読込はデータ同期だけを目的にし、過去の成功・失敗・システムメッセージは無条件で消す。
-  message.value = null
+  // 再読込はデータ同期だけを目的にし、過去の成功・失敗は無条件で消す。
   error.value = null
   notice.value = null
-  await loadDashboard({ showAlert: false, showSystemMessage: false })
-  message.value = null
-  error.value = null
-  notice.value = null
+  await loadDashboard({ showAlert: false, showSystemMessage: true })
 }
 
 async function createTask() {
