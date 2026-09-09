@@ -1,0 +1,58 @@
+name: spring-vue
+
+services:
+  db:
+    # CRUDデータを永続化するPostgreSQL。軽量なAlpineイメージを利用する。
+    image: postgres:17-alpine
+    environment:
+      # サンプル開発用のDB名・ユーザー・パスワード。本番では秘密情報管理へ切り替える。
+      POSTGRES_DB: springvuedb
+      POSTGRES_USER: springvue
+      POSTGRES_PASSWORD: springvue
+    ports:
+      - "5432:5432"
+    volumes:
+      # コンテナ再作成後もタスクデータを保持するため名前付きボリュームを使う。
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # backendがDB起動前に接続して失敗しないよう、PostgreSQLの受付状態を確認する。
+      test: ["CMD-SHELL", "pg_isready -U springvue -d springvuedb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    # Spring Boot APIをビルドして起動し、タスクCRUDとDB接続を提供する。
+    build:
+      context: ./backend
+    environment:
+      # Composeネットワーク上のdbサービスへJDBC接続する。
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/springvuedb
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_USERNAME: springvue
+      SPRING_DATASOURCE_PASSWORD: springvue
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APP_CORS_ALLOWED_ORIGIN: http://localhost:5173
+    ports:
+      # ホストPCからcurlやブラウザでAPI確認できるよう公開する。
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    # Vue/Vite開発サーバーをコンテナで起動し、ブラウザ向けCRUD画面を提供する。
+    build:
+      context: ./frontend
+    environment:
+      # Viteプロキシの転送先をCompose内のbackendサービスへ向ける。
+      VITE_API_PROXY_TARGET: http://backend:8080
+    ports:
+      # ホストPCのhttp://localhost:5173からUIへアクセスする。
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  # PostgreSQLの実データを保持する名前付きボリューム。
+  postgres-data:

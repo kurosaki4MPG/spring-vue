@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Bootの依存バージョンとMavenプラグイン設定を親POMで一元管理する。 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>spring-vue-backend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>spring-vue-backend</name>
+    <description>Spring Boot backend for the spring-vue skeleton</description>
+
+    <properties>
+        <!-- DockerfileのTemurin JDK/JREと揃え、コンパイル対象のJavaバージョンを固定する。 -->
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- REST API Controllerを公開するためのSpring MVC/Web機能。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- TaskエンティティをRepository経由でDBへ永続化するためのJPA機能。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- TaskRequestの必須入力・文字数制限をController入口で検証する。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!-- ローカル単体起動時に外部DBなしでCRUDを確認するためのインメモリDB。 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Docker Compose環境でPostgreSQLへ接続するためのJDBCドライバ。 -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Springコンテキスト起動確認など、バックエンド自動テスト用の依存関係。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 実行可能JARを作成し、Dockerイメージ内でjava -jar起動できるようにする。 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

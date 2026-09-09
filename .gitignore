@@ -1,0 +1,39 @@
+# Backend: Mavenの生成物やWrapper一式は、現在の外骨格では管理対象外にする。
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/pom.xml.tag
+backend/pom.xml.releaseBackup
+backend/pom.xml.versionsBackup
+backend/pom.xml.next
+backend/release.properties
+backend/dependency-reduced-pom.xml
+backend/buildNumber.properties
+backend/.project
+backend/.classpath
+
+# Frontend: npm依存関係とVite生成物は再生成可能なため除外する。
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE / OS: 開発者環境ごとの設定やOS生成ファイルは共有しない。
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+Desktop.ini
+
+# Logs: 実行時ログは環境依存かつ肥大化しやすいため除外する。
+*.log
+
+# Temporary files: 一時的に生成されるファイルは共有しない。
+*.tmp
+*.swp
+*.bak
+*.orig
+
+# Codex: Codex関連の一時ファイルは共有しない。
+.codex-*
+AGENTS.md

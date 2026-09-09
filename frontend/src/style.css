@@ -1,0 +1,347 @@
+:root {
+  /* CRUD確認画面全体の基準色と日本語表示向けフォントを定義する。 */
+  color-scheme: light;
+  font-family:
+    "Noto Sans JP", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  background: #f4f6f8;
+  color: #1f2933;
+}
+
+* {
+  /* paddingとborderを幅計算に含め、フォームやカードの横幅崩れを防ぐ。 */
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  /* 画面高さが短い場合でも背景がビューポート全体へ広がるようにする。 */
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  /* フォーム部品が画面全体の日本語フォント設定を継承するようにする。 */
+  font: inherit;
+}
+
+button {
+  /* 操作ボタンの文言が折り返されて視認性を落とすことを防ぐ。 */
+  white-space: nowrap;
+}
+
+.shell {
+  /* 画面端に余白を作り、管理画面として読みやすい表示領域を確保する。 */
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.workspace {
+  /* PCでは最大幅を固定し、モバイルでは画面幅いっぱいに縮める。 */
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.page-header {
+  /* タイトルと再読込ボタンを左右に配置し、主要操作をヘッダーに固定する。 */
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #5b6472;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+h1,
+h2 {
+  margin: 0;
+  color: #111827;
+}
+
+h1 {
+  font-size: 1.8rem;
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: 1.05rem;
+}
+
+.summary {
+  /* API状態、登録数、未完了、完了を同じ重みで並べる。 */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summary > div,
+.panel {
+  /* 一覧・入力・集計をカード化し、CRUD確認領域を視覚的に分離する。 */
+  background: #ffffff;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+}
+
+.summary > div {
+  padding: 14px 16px;
+}
+
+.summary strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.2rem;
+}
+
+.panel {
+  padding: 18px;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  color: #5b6472;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.method {
+  /* 対応するHTTPメソッドをコード風に表示してAPI操作との対応を明確にする。 */
+  color: #4b5563;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+.system-message,
+.alert,
+.empty-state {
+  /* システム通知、成功/失敗通知、空状態の余白を統一する。 */
+  margin: 0;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.system-message {
+  background: #eef2f7;
+  color: #374151;
+}
+
+.alert--error {
+  /* 入力・通信エラーは赤系で表示し、操作失敗を即時認識できるようにする。 */
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+}
+
+.alert--success {
+  /* CRUD成功時は緑系で表示し、直近操作が完了したことを示す。 */
+  background: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.task-form,
+.edit-form {
+  /* 新規作成フォームと編集フォームは縦積みにし、入力順序を明確にする。 */
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.input,
+.textarea {
+  /* 入力欄の見た目を統一し、作成・編集の操作感を揃える。 */
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  padding: 10px 12px;
+}
+
+.input:focus,
+.textarea:focus {
+  /* キーボード操作時に現在の入力対象を判別しやすくする。 */
+  border-color: #2563eb;
+  outline: 2px solid rgba(37, 99, 235, 0.16);
+}
+
+.textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.check-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #374151;
+}
+
+.actions,
+.task-actions {
+  /* 操作ボタンを右寄せにし、登録・保存・削除の実行位置を揃える。 */
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.actions--split {
+  justify-content: space-between;
+}
+
+.button {
+  /* 主要操作の標準ボタン。作成・保存など肯定操作に使う。 */
+  border: 1px solid #1d4ed8;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 9px 13px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.button--secondary {
+  /* 編集開始やキャンセルなど、補助操作に使う弱調ボタン。 */
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.button--danger {
+  /* 削除操作は赤系で表示し、取り消しにくい操作として区別する。 */
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.task-list {
+  /* タスク一覧は箇条書き記号を消し、カードの集合として表示する。 */
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.task-item {
+  /* 1タスクを情報領域と操作領域に分け、CRUD操作を行単位で完結させる。 */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.task-main {
+  min-width: 0;
+}
+
+.task-main strong {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.task-main p {
+  margin: 4px 0 0;
+  color: #5b6472;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-id {
+  color: #64748b;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.pill {
+  /* 完了状態を小さなラベルで表示し、一覧を走査しやすくする。 */
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.pill--done {
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.done {
+  /* 完了済みタスクは打ち消し線で、作業対象から外れたことを示す。 */
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+@media (max-width: 720px) {
+  /* 狭い画面では1カラム中心に切り替え、操作ボタンを押しやすくする。 */
+  .shell {
+    padding: 16px;
+  }
+
+  .page-header,
+  .panel__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .task-item {
+    grid-template-columns: 1fr;
+  }
+
+  .task-actions,
+  .actions {
+    justify-content: stretch;
+  }
+
+  .button {
+    flex: 1 1 auto;
+  }
+}

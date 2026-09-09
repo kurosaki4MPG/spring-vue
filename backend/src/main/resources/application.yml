@@ -1,0 +1,33 @@
+spring:
+  application:
+    # ログやSpring管理上のアプリケーション名。
+    name: spring-vue-backend
+  datasource:
+    # デフォルトはローカル検証用H2、Docker Composeでは環境変数でPostgreSQLへ切り替える。
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:springvuedb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  jpa:
+    hibernate:
+      # ローカルH2は起動ごとに作り直し、Composeではupdateで永続データを保持する。
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:create-drop}
+    # View層での遅延ロードを避け、Service内でDBアクセスを完結させる。
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      # ローカル開発時にインメモリDBの内容を確認するため有効化する。
+      enabled: true
+      path: /h2-console
+
+server:
+  # フロントエンドのViteプロキシとComposeの公開ポートが参照するAPIポート。
+  port: 8080
+
+app:
+  cors:
+    # Vue開発サーバーから直接APIを呼ぶ場合に許可するオリジン。
+    allowed-origin: ${APP_CORS_ALLOWED_ORIGIN:http://localhost:5173}

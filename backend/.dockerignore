@@ -1,0 +1,8 @@
+# Mavenのビルド成果物はDocker内で再生成するため、ビルドコンテキストから除外する。
+target/
+# Maven Wrapperを採用する場合でも、このDockerfileでは公式Mavenイメージを使うため除外する。
+.mvn/
+mvnw
+mvnw.cmd
+# ログは実行時の一時情報であり、イメージへ含めない。
+*.log
