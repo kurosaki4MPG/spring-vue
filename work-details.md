@@ -64,9 +64,9 @@
 - Vue側で完了・未完了切替UIを実装。
 - UI文言をCRUD検証向けの日本語表現へ見直した。
 - 「再読込」ボタンを追加。
-- 「再読込」時に `message` / `error` / `notice` を無条件で非表示にするよう修正。
+- 「再読込」時に `error` / `notice` を無条件で非表示にし、`message` は再取得して表示するよう修正。
 - `loadDashboard` に `showAlert` と `showSystemMessage` オプションを追加。
-- `refreshDashboard` で再読込前後に `message` / `error` / `notice` をクリアするようにした。
+- `refreshDashboard` で再読込前に操作通知（`error` / `notice`）だけをクリアするようにした。
 
 ## 実装済み: コメント
 
@@ -91,6 +91,23 @@
 - READMEにテスト実行手順を記載。
 - READMEに検証状況を記載。
 - READMEに注意点を記載。
+- READMEにCI実行内容を記載。
+
+## 実装済み: CI
+
+- GitHub Actions設定 `.github/workflows/ci.yml` を追加。
+- `main` ブランチへのpushでCIが実行されるようにした。
+- `main` ブランチ向けpull requestでCIが実行されるようにした。
+- `workflow_dispatch` により手動実行できるようにした。
+- BackendジョブでJava 21をセットアップするようにした。
+- BackendジョブでMaven cacheを使うようにした。
+- Backendジョブで `mvn --batch-mode test` を実行するようにした。
+- FrontendジョブでNode.js 22をセットアップするようにした。
+- Frontendジョブでnpm cacheを使うようにした。
+- Frontendジョブで `npm ci` を実行するようにした。
+- Frontendジョブで `npm run test` を実行するようにした。
+- Frontendジョブで `npm run typecheck` を実行するようにした。
+- Frontendジョブで `npm run build` を実行するようにした。
 
 ## 実装済み: Docker / PostgreSQL
 
@@ -128,7 +145,7 @@
 - `App.test.ts` を追加。
 - 初期表示でAPI状態、システムメッセージ、タスク一覧を表示することをテスト。
 - 新規タスク追加後に成功通知と一覧反映が行われることをテスト。
-- 再読込時に `.system-message` / `.alert--error` / `.alert--success` が非表示になることをテスト。
+- 再読込時に `.system-message` は表示され、`.alert--error` / `.alert--success` が非表示になることをテスト。
 
 ## 検証済み内容
 
@@ -136,8 +153,9 @@
 - バックエンドテスト: 6 tests、failures/errors/skippedなし。
 - `npm run test`: 成功。
 - フロントエンドテスト: 3 tests、failuresなし。
-- `npm run typecheck`: 成功。
+- `npm run typecheck`: 成功。プロジェクトで使用していない `baseUrl` 設定を削除し、非推奨警告を解消。
 - `npm run build`: 成功。
+- GitHub Actions CI設定: 追加済み。
 - `docker compose up --build`: 成功確認済み。
 - `GET http://localhost:8080/api/health`: 成功。
 - `GET http://localhost:8080/api/tasks`: 成功。
@@ -184,10 +202,6 @@ docker compose up --build
 - `mvnw` / `mvnw.cmd` を追加すると、Maven未導入環境でもビルド手順を固定できる。
 - チーム開発やCI導入前に実施する価値が高い。
 
-- CI設定を追加する。
-- GitHub Actionsなどで `mvn test`、`npm ci`、`npm run test`、`npm run typecheck`、`npm run build` を自動実行する。
-- 変更時の破壊を早期検知できる。
-
 - DBマイグレーションを導入する。
 - 現状は `SPRING_JPA_HIBERNATE_DDL_AUTO=update`。
 - 開発初期は便利だが、実運用ではスキーマ変更履歴を管理しにくい。
@@ -224,6 +238,5 @@ docker compose up --build
 ## 次の具体アクション案
 
 - Maven Wrapperを追加してビルド再現性を上げる。
-- GitHub Actionsで自動テストを追加する。
 - Flywayを導入してDBスキーマ管理を始める。
 - `App.vue` を分割して、API層・フォーム・一覧コンポーネントを整理する。

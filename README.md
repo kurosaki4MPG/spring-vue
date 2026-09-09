@@ -149,6 +149,24 @@ npm run build
 - 新規タスク追加後に成功通知と一覧反映が行われること
 - 再読込時にシステムメッセージ、エラー、成功通知が非表示になること
 
+## CI
+
+GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加しています。
+
+実行タイミング:
+
+- `main` ブランチへのpush
+- `main` ブランチ向けpull request
+- 手動実行 `workflow_dispatch`
+
+実行内容:
+
+- Backend: Java 21 / Maven cache / `mvn --batch-mode test`
+- Frontend: Node.js 22 / npm cache / `npm ci`
+- Frontend: `npm run test`
+- Frontend: `npm run typecheck`
+- Frontend: `npm run build`
+
 ### Docker Compose
 
 `docker` が PATH に通っている場合:
@@ -233,6 +251,7 @@ Docker Compose では以下の値を backend に渡しています。
 - `npm run test`: 成功
 - `npm run typecheck`: 成功
 - `npm run build`: 成功
+- GitHub Actions CI設定: 追加済み
 - Backend API CRUD: ローカル H2 で疎通確認済み
 - Frontend dev server: HTTP 200 応答確認済み
 - `C:\docker\docker.exe --version`: 成功
