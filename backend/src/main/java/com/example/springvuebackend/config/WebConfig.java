@@ -1,6 +1,5 @@
 package com.example.springvuebackend.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,9 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final String allowedOrigin;
 
-    public WebConfig(@Value("${app.cors.allowed-origin:http://localhost:5173}") String allowedOrigin) {
+    public WebConfig(AppProperties appProperties) {
         // ローカル実行とDocker実行で許可オリジンを切り替えられるよう設定値から取得する。
-        this.allowedOrigin = allowedOrigin;
+        this.allowedOrigin = appProperties.cors().allowedOrigin();
     }
 
     @Override

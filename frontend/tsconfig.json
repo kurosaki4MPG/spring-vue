@@ -6,6 +6,8 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     // Viteのimport.meta.envとVitestのテストAPIをTypeScriptで解決できるようにする。
     "types": ["vite/client", "vitest/globals"],
+    // 非推奨の警告を無視する。
+    "ignoreDeprecations": "6.0",
     // 相対importの基準をfrontendルートに固定する。
     "baseUrl": "."
   },

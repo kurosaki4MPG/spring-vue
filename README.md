@@ -77,7 +77,6 @@ Compose / Dockerfile で指定しているイメージ:
 
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:8080`
-- H2 console: `http://localhost:8080/h2-console`
 - Vite proxy: `/api` -> `http://localhost:8080`
 
 ### Docker Compose 起動

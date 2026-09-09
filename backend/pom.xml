@@ -50,6 +50,12 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- 独自application.ymlプロパティのメタデータを生成し、IDEのUnknown property警告を防ぐ。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!-- Springコンテキスト起動確認など、バックエンド自動テスト用の依存関係。 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -60,6 +66,14 @@
 
     <build>
         <plugins>
+            <!-- 設定メタデータ生成の注釈処理を明示し、javacの暗黙annotation processing警告を防ぐ。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <proc>full</proc>
+                </configuration>
+            </plugin>
             <!-- 実行可能JARを作成し、Dockerイメージ内でjava -jar起動できるようにする。 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

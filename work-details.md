@@ -18,6 +18,7 @@
 - バックエンドを Spring Boot で構築。
 - フロントエンドを Vue 3 + Vite + TypeScript で構築。
 - ローカル開発用DBとして H2 を設定。
+- `spring.h2.console` はSpring Boot 4.1.1の現在依存セットでUnknown property警告になるため、`application.yml` から除外。
 - Docker Compose用DBとして PostgreSQL 17 Alpine を設定。
 - `compose.yml` を追加し、`db` / `backend` / `frontend` の3サービス構成にした。
 - `backend/Dockerfile` を追加。
