@@ -7,7 +7,11 @@ export default defineConfig({
   test: {
     // App.vueをブラウザ相当のDOM環境でマウントしてUI挙動を検証する。
     environment: 'happy-dom',
-    globals: true
+    globals: true,
+    // Frontendのユニットテストだけを対象にし、依存パッケージのテストを実行しない。
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // PlaywrightのE2EテストはVitestとは別プロセスで実行するため対象外にする。
+    exclude: ['node_modules/**', 'e2e/**', 'test-results/**', 'playwright-report/**']
   },
   server: {
     // Docker版とローカル版で同じURLを使えるよう5173に固定する。

@@ -124,6 +124,39 @@
 - `docs/frontend-api.md` に画面操作とAPI呼び出しの対応、画面状態、エラー処理を記載。
 - READMEから両仕様書へリンクを追加。
 
+## 実装済み: E2Eテスト
+
+- `@playwright/test` をFrontendの開発依存関係へ追加。
+- `frontend/playwright.config.ts` を追加し、Chromiumを対象にした設定を追加。
+- 共有DBのテストデータがエビデンスへ混入しないよう、E2Eを1Workerで直列実行する設定に変更。
+- `frontend/e2e/task-crud.spec.ts` を追加。
+- タスク追加・編集・完了切替・削除を一連で確認するシナリオを追加。
+- `error-cases.spec.ts` にタイトル未入力、追加APIの400、削除APIの404、初期表示の通信エラーを追加。
+- `e2e/helpers.ts` を追加し、主要なイベント・アクション後のスクリーンショットをHTMLレポートへ添付。
+- `cleanupTasks` と `afterEach` を追加し、各テストが作成したデータを後処理で削除。
+- 正常系・再読込・エラー系の各テストで、操作前後の画面状態をエビデンスとして保存。
+- 再読込後の `03-reload-after-refresh` は、一覧表示完了とローディング終了を待ってから保存するよう修正。
+- 後処理でテストデータを削除した後の `04-after-cleanup` エビデンスを追加。
+- 400エラーエビデンスは一覧表示完了後に取得するよう修正。
+- 404エラーケースに後処理後の `02-after-cleanup` エビデンスを追加。
+- 全6件を1Workerで再実行し、10枚のPNGエビデンス生成と一時E2Eデータ0件を確認。
+- 再読込時にシステムメッセージを表示し、成功・エラー通知をリセットするシナリオを追加。
+- `test:e2e`、`test:e2e:ui`、`test:e2e:report` npmスクリプトを追加。
+- E2E実行時にコンソール結果とHTMLレポートを生成するReporterを設定。
+- `npm run test:e2e` 後に `npm run test:e2e:report` でHTMLレポートを表示できることを確認。
+- CIでPlaywrightブラウザをインストールし、Docker Compose起動後にE2Eを実行する設定を追加。
+
+## 実装済み: ローカルCI実行
+
+- `.actrc` を追加し、`ubuntu-latest`相当のRunnerイメージとコンテナアーキテクチャを固定。
+- `scripts/run-ci-local.sh` を追加。
+- `act push` によるCI全体、Backendのみ、Frontendのみの実行に対応。
+- Git Bash・Linux・macOSで利用できるシェルスクリプトとして作成。
+- Bash専用構文を避け、`sh scripts/run-ci-local.sh` でも実行できるPOSIXシェル互換にした。
+- READMEに`act`のインストールと実行手順を記載。
+- Wingetで`act`をインストール済みであることを確認。
+- `act push -j backend` を実行したが、初回Runnerイメージ取得中に停止したため、CIジョブの完了結果は未確認。
+
 ## 実装済み: Docker / PostgreSQL
 
 - Docker ComposeでPostgreSQL永続化を確認。
@@ -168,9 +201,16 @@
 - バックエンドテスト: 6 tests、failures/errors/skippedなし。
 - `npm run test`: 成功。
 - フロントエンドテスト: 3 tests、failuresなし。
+- `npm run test:e2e`: 成功。Chromiumで2 tests、failuresなし。
 - `npm run typecheck`: 成功。プロジェクトで使用していない `baseUrl` 設定を削除し、非推奨警告を解消。
 - `npm run build`: 成功。
 - GitHub Actions CI設定: 追加済み。
+- Playwrightテスト定義: 6 tests in 2 filesとして認識されることを確認。
+- ローカルPlaywright実行: Docker Compose上で1Worker・直列実行し、6 tests成功。
+- E2E初回実行で編集フォームのLocatorが旧タイトル変更後に対象を見失ったため、編集フォームを固定Locatorで取得するよう修正。
+- `E2E再読込-*` シナリオで作成したテストタスクを `finally` で削除する後処理を追加。
+- CRUD、再読込、404ケースの各テストデータを、タイトル単位の後処理で削除するように統一。
+- 既存の `E2E再読込-*` データ4件を削除し、再実行後も同データが残らないことを確認。
 - `docker compose up --build`: 成功確認済み。
 - `GET http://localhost:8080/api/health`: 成功。
 - `GET http://localhost:8080/api/tasks`: 成功。
@@ -212,10 +252,6 @@ docker compose up --build
 ```
 
 ## 推論: このあとやっておいたほうがよい作業
-
-- E2Eテストを追加する。
-- 現在はバックエンド統合テストとフロントエンドコンポーネントテスト。
-- Docker Compose起動後に、ブラウザ操作でCRUDと永続化を検証するPlaywrightを追加すると品質が上がる。
 
 - UIに削除確認ダイアログを追加する。
 - 現状は削除ボタン押下で即DELETE。

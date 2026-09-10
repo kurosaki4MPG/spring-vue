@@ -150,6 +150,41 @@ npm run build
 - 新規タスク追加後に成功通知と一覧反映が行われること
 - 再読込時にシステムメッセージを表示し、エラー・成功通知を非表示にすること
 
+### E2E
+
+PlaywrightでDocker Compose上のFrontendをブラウザから操作し、タスクCRUD、再読込時の通知制御、入力・API・通信エラーを確認します。テストは共有DB上のデータ混入を防ぐため1Workerで直列実行し、主要なイベント・アクション後およびテストデータ後処理後のスクリーンショットをHTMLレポートへ添付します。
+
+```powershell
+$env:DOCKER_HOST = "tcp://127.0.0.1:2375"
+docker compose up -d --build
+
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
+
+UIモードで実行する場合:
+
+```powershell
+npm run test:e2e:ui
+```
+
+テストレポートを表示する場合:
+
+```powershell
+npm run test:e2e
+npm run test:e2e:report
+```
+
+`npm run test:e2e` の実行時に `frontend/playwright-report/` が生成されます。`npm run test:e2e:report` は、生成済みのHTMLレポートをブラウザで開くコマンドです。テストを先に実行せず、レポートだけを表示することはできません。
+
+テスト終了後:
+
+```powershell
+cd ..
+docker compose down
+```
+
 ## CI
 
 GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加しています。
@@ -167,6 +202,35 @@ GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加してい�
 - Frontend: `npm run test`
 - Frontend: `npm run typecheck`
 - Frontend: `npm run build`
+- E2E: Playwright Chromium / Docker Compose起動後に `npm run test:e2e`
+
+### ローカルCI実行（act）
+
+GitHub ActionsのWorkflowをローカルで実行する場合は、先に`act`をインストールします。実行スクリプトはGit Bash、Linux、macOSで利用できるシェルスクリプトです。
+
+```bash
+winget install nektos.act
+```
+
+Docker CLIとDocker daemonを起動した状態で、リポジトリルートから実行します。
+
+```bash
+chmod +x scripts/run-ci-local.sh
+./scripts/run-ci-local.sh
+```
+
+実行権限を付与できない場合は、`sh scripts/run-ci-local.sh` の形式でも実行できます。
+
+ジョブ単位で実行する場合:
+
+```bash
+./scripts/run-ci-local.sh backend
+./scripts/run-ci-local.sh frontend
+```
+
+このスクリプトは、`.github/workflows/ci.yml` の`push`イベントを`act`で再現します。Frontendジョブでは、依存関係、型チェック、ビルド、Docker Compose起動、Playwright E2Eまで実行します。
+
+初回実行では、`catthehacker/ubuntu:act-latest`のRunnerイメージ、Java/Node.js環境、Playwrightブラウザなどのダウンロードに時間がかかります。
 
 ## API仕様書
 

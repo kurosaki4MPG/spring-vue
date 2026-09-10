@@ -14,6 +14,8 @@ backend/.classpath
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/test-results/
+frontend/playwright-report/
 
 # IDE / OS: 開発者環境ごとの設定やOS生成ファイルは共有しない。
 .idea/
