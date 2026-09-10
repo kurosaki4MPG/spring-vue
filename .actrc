@@ -1,0 +1,4 @@
+# GitHub Actionsのubuntu-latest相当イメージを固定する。
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+# WindowsホストでもCIジョブのコンテナアーキテクチャを統一する。
+--container-architecture linux/amd64

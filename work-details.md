@@ -101,7 +101,7 @@
 - `workflow_dispatch` により手動実行できるようにした。
 - BackendジョブでJava 21をセットアップするようにした。
 - BackendジョブでMaven cacheを使うようにした。
-- Backendジョブで `./mvnw --batch-mode test` を実行するようにした。
+- Backendジョブで `bash ./mvnw --batch-mode test` を実行するようにした。
 - FrontendジョブでNode.js 22をセットアップするようにした。
 - Frontendジョブでnpm cacheを使うようにした。
 - Frontendジョブで `npm ci` を実行するようにした。
@@ -115,7 +115,7 @@
 - Maven 3.9.11をWrapperの配布バージョンとして固定。
 - `.gitignore` からWrapper関連ファイルの除外設定を削除。
 - `backend/mvnw` のGit実行権限 `100755` を確認。
-- GitHub ActionsのBackendテストを `./mvnw --batch-mode test` へ変更。
+- GitHub ActionsのBackendテストを `bash ./mvnw --batch-mode test` へ変更。
 - CI上でBackendテストが正常完了することを確認。
 
 ## 実装済み: API仕様書
@@ -153,9 +153,15 @@
 - `act push` によるCI全体、Backendのみ、Frontendのみの実行に対応。
 - Git Bash・Linux・macOSで利用できるシェルスクリプトとして作成。
 - Bash専用構文を避け、`sh scripts/run-ci-local.sh` でも実行できるPOSIXシェル互換にした。
+- `act`実行前に`backend/mvnw`へ実行権限を付与し、ローカルWorkspaceの権限差異を吸収。
 - READMEに`act`のインストールと実行手順を記載。
 - Wingetで`act`をインストール済みであることを確認。
-- `act push -j backend` を実行したが、初回Runnerイメージ取得中に停止したため、CIジョブの完了結果は未確認。
+- `sh scripts/run-ci-local.sh backend` によるact実行を確認。
+- Java 21環境でBackendテスト6件がすべて成功し、CIジョブが完了した。
+- Mavenキャッシュの復元・保存ではローカルキャッシュサーバーへの接続警告が出たが、テスト結果には影響しなかった。
+- Docker Compose起動後にFrontend E2Eテスト6件を再実行し、全件成功した。
+- 400エラーケースは、タスク一覧が空の場合も含めて読み込み完了を待つよう修正し、flakyを解消した。
+- CIのDocker Compose起動後にBackendの`/api/health`を最大60秒待機し、API起動前の502によるE2E flakyを防止するようにした。
 
 ## 実装済み: Docker / PostgreSQL
 

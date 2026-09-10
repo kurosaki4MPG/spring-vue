@@ -197,12 +197,12 @@ GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加してい�
 
 実行内容:
 
-- Backend: Java 21 / Maven cache / `./mvnw --batch-mode test`（Maven 3.9.11）
+- Backend: Java 21 / Maven cache / `bash ./mvnw --batch-mode test`（Maven 3.9.11）
 - Frontend: Node.js 22 / npm cache / `npm ci`
 - Frontend: `npm run test`
 - Frontend: `npm run typecheck`
 - Frontend: `npm run build`
-- E2E: Playwright Chromium / Docker Compose起動後に `npm run test:e2e`
+- E2E: Playwright Chromium / Docker Compose起動後にBackendの`/api/health`とFrontendを待機して `npm run test:e2e`
 
 ### ローカルCI実行（act）
 

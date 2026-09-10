@@ -36,7 +36,8 @@ test('タスク追加APIの400エラーを画面に表示する', async ({ page 
 
   await page.goto('/')
   // APIエラー画面のエビデンスに一覧読み込み中の状態を混在させない。
-  await expect(page.locator('.task-list')).toBeVisible()
+  await expect(page.locator('.task-list, .empty-state')).toBeVisible()
+  await expect(page.locator('.empty-state').filter({ hasText: '読み込み中です。' })).toHaveCount(0)
   const createForm = page.locator('form.task-form')
   await createForm.locator('input.input').fill('APIエラー確認用')
   await createForm.getByRole('button', { name: '追加' }).click()
