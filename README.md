@@ -15,6 +15,7 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - OS: Windows 11
 - Java: Eclipse Adoptium Temurin OpenJDK 21.0.9 LTS
 - Maven: Apache Maven 3.9.16
+- Maven Wrapper: Apache Maven 3.9.11
 - Node.js: v22.23.2
 - npm: 12.0.2
 
@@ -27,7 +28,7 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - Hibernate ORM: 7.4.5.Final
 - H2 Database: 2.4.240
 - PostgreSQL JDBC Driver: 42.7.13
-- Build tool: Maven
+- Build tool: Maven Wrapper（Maven 3.9.11）
 
 直接利用している Spring Boot starter:
 
@@ -99,7 +100,7 @@ PostgreSQL 接続情報:
 
 ```bash
 cd backend
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 ### Frontend only
@@ -118,7 +119,7 @@ npm run dev
 
 ```powershell
 cd backend
-mvn test
+.\mvnw.cmd test
 ```
 
 確認範囲:
@@ -147,7 +148,7 @@ npm run build
 
 - 初期表示でAPI状態、システムメッセージ、タスク一覧を表示すること
 - 新規タスク追加後に成功通知と一覧反映が行われること
-- 再読込時にシステムメッセージ、エラー、成功通知が非表示になること
+- 再読込時にシステムメッセージを表示し、エラー・成功通知を非表示にすること
 
 ## CI
 
@@ -161,7 +162,7 @@ GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加してい�
 
 実行内容:
 
-- Backend: Java 21 / Maven cache / `mvn --batch-mode test`
+- Backend: Java 21 / Maven cache / `./mvnw --batch-mode test`（Maven 3.9.11）
 - Frontend: Node.js 22 / npm cache / `npm ci`
 - Frontend: `npm run test`
 - Frontend: `npm run typecheck`
@@ -246,12 +247,13 @@ Docker Compose では以下の値を backend に渡しています。
 
 実施済み:
 
-- `mvn test`: 成功
+- `backend/mvnw.cmd test`: 成功
 - `npm install`: 成功
 - `npm run test`: 成功
 - `npm run typecheck`: 成功
 - `npm run build`: 成功
-- GitHub Actions CI設定: 追加済み
+- GitHub Actions CI設定: 追加済み、Backendテスト成功確認済み
+- Maven Wrapper: `backend/mvnw` の実行権限 `100755` を確認済み
 - Backend API CRUD: ローカル H2 で疎通確認済み
 - Frontend dev server: HTTP 200 応答確認済み
 - `C:\docker\docker.exe --version`: 成功

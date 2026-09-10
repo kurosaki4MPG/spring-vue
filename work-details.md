@@ -101,13 +101,22 @@
 - `workflow_dispatch` により手動実行できるようにした。
 - BackendジョブでJava 21をセットアップするようにした。
 - BackendジョブでMaven cacheを使うようにした。
-- Backendジョブで `mvn --batch-mode test` を実行するようにした。
+- Backendジョブで `./mvnw --batch-mode test` を実行するようにした。
 - FrontendジョブでNode.js 22をセットアップするようにした。
 - Frontendジョブでnpm cacheを使うようにした。
 - Frontendジョブで `npm ci` を実行するようにした。
 - Frontendジョブで `npm run test` を実行するようにした。
 - Frontendジョブで `npm run typecheck` を実行するようにした。
 - Frontendジョブで `npm run build` を実行するようにした。
+
+## 実装済み: Maven Wrapper
+
+- `backend/mvnw`、`backend/mvnw.cmd`、`.mvn/wrapper/maven-wrapper.properties` を追加。
+- Maven 3.9.11をWrapperの配布バージョンとして固定。
+- `.gitignore` からWrapper関連ファイルの除外設定を削除。
+- `backend/mvnw` のGit実行権限 `100755` を確認。
+- GitHub ActionsのBackendテストを `./mvnw --batch-mode test` へ変更。
+- CI上でBackendテストが正常完了することを確認。
 
 ## 実装済み: Docker / PostgreSQL
 
@@ -149,7 +158,7 @@
 
 ## 検証済み内容
 
-- `mvn test`: 成功。
+- `backend/mvnw.cmd test`: 成功。
 - バックエンドテスト: 6 tests、failures/errors/skippedなし。
 - `npm run test`: 成功。
 - フロントエンドテスト: 3 tests、failuresなし。
@@ -198,19 +207,6 @@ docker compose up --build
 
 ## 推論: このあとやっておいたほうがよい作業
 
-- Maven Wrapperを導入する。
-- `mvnw` / `mvnw.cmd` を追加すると、Maven未導入環境でもビルド手順を固定できる。
-- チーム開発やCI導入前に実施する価値が高い。
-
-- DBマイグレーションを導入する。
-- 現状は `SPRING_JPA_HIBERNATE_DDL_AUTO=update`。
-- 開発初期は便利だが、実運用ではスキーマ変更履歴を管理しにくい。
-- FlywayまたはLiquibaseの導入を推奨。
-
-- 環境変数・秘密情報管理を整理する。
-- 現状のDBユーザー/パスワードは `springvue` 固定。
-- 本番相当では `.env`、Docker secrets、Vault系サービスなどへ分離する。
-
 - API仕様書を追加する。
 - OpenAPI / Swagger UI を導入すると、CRUD APIの確認が容易になる。
 - フロントエンド・バックエンド間の接続仕様も明確になる。
@@ -231,12 +227,7 @@ docker compose up --build
 - 現在は `App.vue` にAPI呼び出しとUIロジックが集約されている。
 - 次の拡張に備えるなら、`services/taskApi.ts` や `components/TaskForm.vue` へ分割すると保守しやすくなる。
 
-- 認証・認可を検討する。
-- 現状は誰でもCRUD可能。
-- 実システム化する場合は、Spring Security、ログイン、ユーザー別タスク管理が必要になる。
-
 ## 次の具体アクション案
 
-- Maven Wrapperを追加してビルド再現性を上げる。
-- Flywayを導入してDBスキーマ管理を始める。
+- 必要に応じてOpenAPI / Swagger UIを導入してAPI仕様を確認しやすくする。
 - `App.vue` を分割して、API層・フォーム・一覧コンポーネントを整理する。
