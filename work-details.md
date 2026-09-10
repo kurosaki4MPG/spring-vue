@@ -118,6 +118,12 @@
 - GitHub ActionsのBackendテストを `./mvnw --batch-mode test` へ変更。
 - CI上でBackendテストが正常完了することを確認。
 
+## 実装済み: API仕様書
+
+- `docs/backend-api.md` にBackendのエンドポイント、入出力、ステータス、エラー形式を記載。
+- `docs/frontend-api.md` に画面操作とAPI呼び出しの対応、画面状態、エラー処理を記載。
+- READMEから両仕様書へリンクを追加。
+
 ## 実装済み: Docker / PostgreSQL
 
 - Docker ComposeでPostgreSQL永続化を確認。
@@ -207,10 +213,6 @@ docker compose up --build
 
 ## 推論: このあとやっておいたほうがよい作業
 
-- API仕様書を追加する。
-- OpenAPI / Swagger UI を導入すると、CRUD APIの確認が容易になる。
-- フロントエンド・バックエンド間の接続仕様も明確になる。
-
 - E2Eテストを追加する。
 - 現在はバックエンド統合テストとフロントエンドコンポーネントテスト。
 - Docker Compose起動後に、ブラウザ操作でCRUDと永続化を検証するPlaywrightを追加すると品質が上がる。
@@ -229,5 +231,4 @@ docker compose up --build
 
 ## 次の具体アクション案
 
-- 必要に応じてOpenAPI / Swagger UIを導入してAPI仕様を確認しやすくする。
 - `App.vue` を分割して、API層・フォーム・一覧コンポーネントを整理する。

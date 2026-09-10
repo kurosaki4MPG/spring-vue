@@ -168,6 +168,11 @@ GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加してい�
 - Frontend: `npm run typecheck`
 - Frontend: `npm run build`
 
+## API仕様書
+
+- [Backend API仕様書](docs/backend-api.md)
+- [Frontend API連携仕様書](docs/frontend-api.md)
+
 ### Docker Compose
 
 `docker` が PATH に通っている場合:
