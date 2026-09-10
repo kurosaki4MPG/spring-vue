@@ -1,8 +1,5 @@
 # Backend: Mavenの生成物やWrapper一式は、現在の外骨格では管理対象外にする。
 backend/target/
-backend/.mvn/
-backend/mvnw
-backend/mvnw.cmd
 backend/pom.xml.tag
 backend/pom.xml.releaseBackup
 backend/pom.xml.versionsBackup

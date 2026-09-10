@@ -30,7 +30,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
-        run: mvn --batch-mode test
+        run: ./mvnw --batch-mode test
 
   frontend:
     name: Frontend
