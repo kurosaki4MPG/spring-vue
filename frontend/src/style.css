@@ -245,6 +245,32 @@ h2 {
   color: #ffffff;
 }
 
+.delete-dialog {
+  /* 削除確認を画面中央に表示し、背後の一覧操作と明確に分離する。 */
+  width: min(460px, calc(100% - 32px));
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.24);
+}
+
+.delete-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.delete-dialog__content {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.delete-dialog__message {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
 .task-list {
   /* タスク一覧は箇条書き記号を消し、カードの集合として表示する。 */
   display: grid;

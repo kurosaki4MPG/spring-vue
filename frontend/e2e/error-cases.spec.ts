@@ -76,6 +76,8 @@ test('存在しないタスク削除の404エラーを画面に表示する', as
     })
 
     await taskItem.getByRole('button', { name: '削除' }).click()
+    await expect(page.getByRole('dialog')).toContainText(title)
+    await page.getByRole('dialog').getByRole('button', { name: '削除する' }).click()
     await expect(page.locator('.alert--error')).toContainText(`Task not found: ${createdTaskId}`)
     await expect(taskItem).toBeVisible()
     await attachSnapshot(page, testInfo, '01-delete-404-error')

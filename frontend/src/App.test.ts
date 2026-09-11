@@ -148,6 +148,53 @@ describe('App', () => {
     expect(wrapper.text()).toContain('追加タスク')
   })
 
+  it('削除ボタンでは確認前にAPIを呼び出さず、キャンセルで対象を維持する', async () => {
+    const fetchMock = createFetchMock([
+      {
+        id: 1,
+        title: '削除確認タスク',
+        description: null,
+        completed: false,
+        createdAt: now,
+        updatedAt: now
+      }
+    ])
+    vi.stubGlobal('fetch', fetchMock)
+
+    const wrapper = await mountApp()
+    await wrapper.find('.button--danger').trigger('click')
+
+    expect(wrapper.find('dialog').text()).toContain('削除確認タスク')
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'DELETE')).toBe(false)
+
+    await wrapper.find('dialog .button--secondary').trigger('click')
+    expect(wrapper.text()).toContain('削除確認タスク')
+    expect(wrapper.find('dialog .delete-dialog__message').exists()).toBe(false)
+  })
+
+  it('削除確認後にDELETE APIを呼び出し、一覧から対象を削除する', async () => {
+    const fetchMock = createFetchMock([
+      {
+        id: 1,
+        title: '削除実行タスク',
+        description: null,
+        completed: false,
+        createdAt: now,
+        updatedAt: now
+      }
+    ])
+    vi.stubGlobal('fetch', fetchMock)
+
+    const wrapper = await mountApp()
+    await wrapper.find('.button--danger').trigger('click')
+    await wrapper.find('dialog form').trigger('submit')
+    await flushPromises()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/tasks/1', expect.objectContaining({ method: 'DELETE' }))
+    expect(wrapper.text()).not.toContain('削除実行タスク')
+    expect(wrapper.find('.alert--success').text()).toBe('タスクを削除しました。')
+  })
+
   it('再読込ではシステムメッセージを表示し、エラーと成功通知を非表示にする', async () => {
     vi.stubGlobal('fetch', createFetchMock())
 

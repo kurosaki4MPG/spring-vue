@@ -47,9 +47,17 @@ test('タスクの追加・更新・完了切替・削除を確認できる', as
   await attachSnapshot(page, testInfo, '03-after-update-and-complete')
 
   await updatedTaskItem.getByRole('button', { name: '削除' }).click()
+  await expect(page.getByRole('dialog')).toContainText(updatedTitle)
+  await attachSnapshot(page, testInfo, '04-delete-confirm-dialog')
+  await page.getByRole('dialog').getByRole('button', { name: 'キャンセル' }).click()
+  await expect(updatedTaskItem).toBeVisible()
+  await attachSnapshot(page, testInfo, '05-after-delete-cancel')
+
+  await updatedTaskItem.getByRole('button', { name: '削除' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: '削除する' }).click()
   await expect(page.locator('.alert--success')).toContainText('タスクを削除しました。')
   await expect(page.locator('.task-item').filter({ hasText: updatedTitle })).toHaveCount(0)
-  await attachSnapshot(page, testInfo, '04-after-delete')
+  await attachSnapshot(page, testInfo, '06-after-delete')
 })
 
 test('再読込でシステムメッセージを表示し、操作通知をリセットする', async ({ page }, testInfo) => {

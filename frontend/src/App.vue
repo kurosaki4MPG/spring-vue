@@ -38,6 +38,8 @@ const editingId = ref<number | null>(null)
 const editTitle = ref('')
 const editDescription = ref('')
 const editCompleted = ref(false)
+const deleteDialog = ref<HTMLDialogElement | null>(null)
+const deleteTarget = ref<Task | null>(null)
 
 // 一覧の状態から業務上の集計値を算出する。DBへ追加問い合わせは行わない。
 const completedCount = computed(() => tasks.value.filter((task) => task.completed).length)
@@ -256,6 +258,30 @@ async function deleteTask(id: number) {
   }
 }
 
+function openDeleteDialog(task: Task) {
+  // 対象を一時保持し、ユーザーが明示的に確認するまで削除APIを呼び出さない。
+  deleteTarget.value = task
+  if (deleteDialog.value && typeof deleteDialog.value.showModal === 'function') {
+    deleteDialog.value.showModal()
+  }
+}
+
+function closeDeleteDialog() {
+  // キャンセル時は対象を破棄し、タスク一覧を変更しない。
+  deleteDialog.value?.close()
+  deleteTarget.value = null
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) {
+    return
+  }
+
+  const taskId = deleteTarget.value.id
+  closeDeleteDialog()
+  await deleteTask(taskId)
+}
+
 // 初期表示ではAPI状態、システムメッセージ、タスク一覧をまとめて読み込む。
 onMounted(loadDashboard)
 </script>
@@ -388,7 +414,7 @@ onMounted(loadDashboard)
                 <button type="button" class="button button--secondary" :disabled="saving" @click="startEdit(task)">
                   編集
                 </button>
-                <button type="button" class="button button--danger" :disabled="saving" @click="deleteTask(task.id)">
+                <button type="button" class="button button--danger" :disabled="saving" @click="openDeleteDialog(task)">
                   削除
                 </button>
               </div>
@@ -397,5 +423,23 @@ onMounted(loadDashboard)
         </ul>
       </section>
     </section>
+
+    <dialog ref="deleteDialog" class="delete-dialog" aria-labelledby="delete-dialog-title">
+      <!-- 削除前に対象と不可逆操作であることを確認し、誤操作を防止する。 -->
+      <form method="dialog" class="delete-dialog__content" @submit.prevent="confirmDelete">
+        <h2 id="delete-dialog-title">タスクを削除しますか？</h2>
+        <p v-if="deleteTarget" class="delete-dialog__message">
+          「{{ deleteTarget.title }}」を削除します。この操作は取り消せません。
+        </p>
+        <div class="actions">
+          <button type="button" class="button button--secondary" :disabled="saving" @click="closeDeleteDialog">
+            キャンセル
+          </button>
+          <button type="submit" class="button button--danger" :disabled="saving || !deleteTarget">
+            削除する
+          </button>
+        </div>
+      </form>
+    </dialog>
   </main>
 </template>
