@@ -60,12 +60,13 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit): Pro
 
     if (contentType.includes('application/json')) {
       const body = (await response.json()) as { error?: string; details?: Array<{ message?: string }> }
-      const details = body.details?.map((detail) => detail.message).filter(Boolean) ?? []
-      throw new Error(body.error ?? details.join(', ') ?? `Request failed: ${response.status}`)
+      const details = body.details?.map((detail) => detail.message?.trim()).filter(Boolean) ?? []
+      const message = body.error?.trim() || details.join(', ') || `リクエストに失敗しました（HTTP ${response.status}）。`
+      throw new Error(message)
     }
 
     const body = await response.text()
-    throw new Error(body || `Request failed: ${response.status}`)
+    throw new Error(body || `リクエストに失敗しました（HTTP ${response.status}）。`)
   }
 
   if (response.status === 204) {
@@ -77,7 +78,11 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit): Pro
 
 function setError(err: unknown) {
   // エラー表示時は成功通知を消し、ユーザーが直近の失敗だけを判断できるようにする。
-  error.value = err instanceof Error ? err.message : '不明なエラーが発生しました。'
+  error.value = err instanceof TypeError
+    ? 'サーバーに接続できませんでした。再読込してください。'
+    : err instanceof Error && err.message
+      ? err.message
+      : '予期しないエラーが発生しました。再読込してください。'
   notice.value = null
 }
 
@@ -322,7 +327,10 @@ onMounted(loadDashboard)
 
       <!-- 再読込時はシステムメッセージを表示し、成功・エラー通知をリセットする。 -->
       <p v-if="message" class="system-message">{{ message.message }}</p>
-      <p v-if="error" class="alert alert--error">{{ error }}</p>
+      <div v-if="error" class="alert alert--error" role="alert" aria-live="assertive">
+        <strong class="alert__title">エラー</strong>
+        <span>{{ error }}</span>
+      </div>
       <p v-if="notice" class="alert alert--success">{{ notice }}</p>
 
       <section class="panel" aria-labelledby="create-task-title">

@@ -153,6 +153,18 @@ h2 {
   color: #be123c;
 }
 
+.alert__title {
+  /* エラー種別を本文から分離し、画面確認と読み上げの起点を明確にする。 */
+  flex: 0 0 auto;
+}
+
+.alert--error,
+.alert--success {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .alert--success {
   /* CRUD成功時は緑系で表示し、直近操作が完了したことを示す。 */
   background: #ecfdf3;
