@@ -274,11 +274,8 @@ docker compose up --build
 ## 推論: このあとやっておいたほうがよい作業
 
 - 現時点で、この節に残っているエラー表示関連の未実施項目はない。
-
-- ページ分割・APIクライアント分離を行う。
-- 現在は `App.vue` にAPI呼び出しとUIロジックが集約されている。
-- 次の拡張に備えるなら、`services/taskApi.ts` や `components/TaskForm.vue` へ分割すると保守しやすくなる。
-
-## 次の具体アクション案
-
-- `App.vue` を分割して、API層・フォーム・一覧コンポーネントを整理する。
+- `App.vue`の責務分割とAPIクライアント分離を実施した。
+- `services/taskApi.ts`へAPI通信とHTTPエラー変換を分離した。
+- `TaskForm.vue`、`TaskList.vue`、`DeleteConfirmDialog.vue`へUI責務を分離した。
+- 分割後の入力エラー通知の移行漏れを修正し、単体テスト7件、型チェック、ビルド、E2E 6件が成功した。
+- E2E実行後の`E2E*`一時データ残存数0件を確認した。

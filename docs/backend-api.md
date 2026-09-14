@@ -23,7 +23,7 @@ Content-Type: application/json
 ### 2.2 タスクオブジェクト
 
 | 項目 | 型 | 必須 | 説明 |
-|---|---|---:|---|
+| --- | --- | ---: | --- |
 | `id` | number | - | タスクID |
 | `title` | string | yes | タイトル。1文字以上120文字以下 |
 | `description` | stringまたはnull | no | 説明。最大1000文字 |
@@ -34,7 +34,7 @@ Content-Type: application/json
 ### 2.3 タスク登録・更新リクエスト
 
 | 項目 | 型 | 必須 | 制約 |
-|---|---|---:|---|
+| --- | --- | ---: | --- |
 | `title` | string | yes | 空白のみ不可、最大120文字 |
 | `description` | stringまたはnull | no | 最大1000文字 |
 | `completed` | boolean | yes | 完了状態 |
@@ -42,7 +42,7 @@ Content-Type: application/json
 ## 3. API一覧
 
 | メソッド | パス | 用途 | 成功ステータス |
-|---|---|---|---:|
+| --- | --- | --- | ---: |
 | GET | `/api/health` | Backend稼働状態取得 | 200 |
 | GET | `/api/message` | システムメッセージ取得 | 200 |
 | GET | `/api/tasks` | タスク一覧取得 | 200 |
