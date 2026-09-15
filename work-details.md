@@ -279,3 +279,21 @@ docker compose up --build
 - `TaskForm.vue`、`TaskList.vue`、`DeleteConfirmDialog.vue`へUI責務を分離した。
 - 分割後の入力エラー通知の移行漏れを修正し、単体テスト7件、型チェック、ビルド、E2E 6件が成功した。
 - E2E実行後の`E2E*`一時データ残存数0件を確認した。
+- `TaskServiceTest`を追加し、Repositoryをモックした業務ロジック単体テスト5件を実装した。
+- Frontendの`TaskForm`、`TaskList`、`DeleteConfirmDialog`、`taskApi`の単体テストを追加した。
+- 追加テスト後のBackendテスト11件、Frontend単体テスト20件、型チェック、ビルドが成功した。
+
+## 2026-09-15: 静的解析・フォーマット・CI検査
+
+- FrontendへESLint 10.10.0、eslint-plugin-vue 10.11.0、typescript-eslint 8.70.0を導入し、`npm run lint`を追加した。
+- FrontendへPrettier 3.9.6を導入し、設定ファイルと`npm run format`、`npm run format:check`を追加した。
+- BackendへSpotless Maven Plugin 2.44.4とgoogle-java-format 1.25.2を導入し、`verify`フェーズで形式検査を実行するようにした。
+- GitHub Actions CIへFrontendのPrettier検査・ESLint検査とBackendのSpotlessを含む`verify`を追加した。
+- 静的解析・形式検査後もBackend 11テスト、Frontend 20テスト、Frontend typecheck、buildが成功した。
+
+## 2026-09-15: 依存方向テスト
+
+- BackendへArchUnit 1.4.1を追加し、Controller・Service・Repository・DTOの依存方向を検証する`ArchitectureTest`を実装した。
+- ControllerからRepository・Entityへの直接依存、Repositoryから上位層への依存、ServiceからControllerへの依存、DTOから実装層への依存を禁止した。
+- Frontendの`App.vue`とUIコンポーネントから`fetch`を直接呼び出せないESLintルールを追加し、API通信を`taskApi.ts`へ集約した。
+- ArchUnitを含むBackend `verify`で15テスト、Frontend `lint`で依存方向ルールを含む検査が成功した。

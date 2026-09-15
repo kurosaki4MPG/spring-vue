@@ -36,7 +36,8 @@ export async function requestJson<T>(input: RequestInfo | URL, init?: RequestIni
     if (contentType.includes('application/json')) {
       const body = (await response.json()) as { error?: string; details?: Array<{ message?: string }> }
       const details = body.details?.map((detail) => detail.message?.trim()).filter(Boolean) ?? []
-      const message = body.error?.trim() || details.join(', ') || `リクエストに失敗しました（HTTP ${response.status}）。`
+      const message =
+        body.error?.trim() || details.join(', ') || `リクエストに失敗しました（HTTP ${response.status}）。`
       throw new Error(message)
     }
 

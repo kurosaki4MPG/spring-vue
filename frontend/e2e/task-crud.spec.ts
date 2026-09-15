@@ -11,10 +11,7 @@ test.afterEach(async ({ page }, testInfo) => {
 test('タスクの追加・更新・完了切替・削除を確認できる', async ({ page }, testInfo) => {
   const title = `E2Eタスク-${Date.now()}`
   const updatedTitle = `${title}-更新`
-  testInfo.annotations.push(
-    { type: 'cleanup', description: title },
-    { type: 'cleanup', description: updatedTitle }
-  )
+  testInfo.annotations.push({ type: 'cleanup', description: title }, { type: 'cleanup', description: updatedTitle })
 
   await page.goto('/')
 
@@ -74,9 +71,7 @@ test('再読込でシステムメッセージを表示し、操作通知をリ�
     await createForm.locator('input.input').fill(title)
     const createResponsePromise = page.waitForResponse(
       (response) =>
-        response.url().endsWith('/api/tasks') &&
-        response.request().method() === 'POST' &&
-        response.status() === 201
+        response.url().endsWith('/api/tasks') && response.request().method() === 'POST' && response.status() === 201
     )
     await createForm.getByRole('button', { name: '追加' }).click()
     const createdTask = (await (await createResponsePromise).json()) as { id: number }

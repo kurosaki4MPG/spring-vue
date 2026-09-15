@@ -81,7 +81,9 @@ function confirmDelete() {
           <span>完了済みにする</span>
         </label>
         <div class="actions actions--split">
-          <button type="button" class="button button--secondary" :disabled="saving" @click="cancelEdit">キャンセル</button>
+          <button type="button" class="button button--secondary" :disabled="saving" @click="cancelEdit">
+            キャンセル
+          </button>
           <button type="submit" class="button" :disabled="saving">保存</button>
         </div>
       </form>
@@ -99,8 +101,12 @@ function confirmDelete() {
           <button type="button" class="button button--secondary" :disabled="saving" @click="emit('toggle', task)">
             {{ task.completed ? '未完了へ' : '完了へ' }}
           </button>
-          <button type="button" class="button button--secondary" :disabled="saving" @click="startEdit(task)">編集</button>
-          <button type="button" class="button button--danger" :disabled="saving" @click="requestDelete(task)">削除</button>
+          <button type="button" class="button button--secondary" :disabled="saving" @click="startEdit(task)">
+            編集
+          </button>
+          <button type="button" class="button button--danger" :disabled="saving" @click="requestDelete(task)">
+            削除
+          </button>
         </div>
       </template>
     </li>

@@ -1,8 +1,7 @@
 :root {
   /* CRUD確認画面全体の基準色と日本語表示向けフォントを定義する。 */
   color-scheme: light;
-  font-family:
-    "Noto Sans JP", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  font-family: 'Noto Sans JP', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
   background: #f4f6f8;
   color: #1f2933;
 }
@@ -128,7 +127,7 @@ h2 {
 .method {
   /* 対応するHTTPメソッドをコード風に表示してAPI操作との対応を明確にする。 */
   color: #4b5563;
-  font-family: "Cascadia Mono", Consolas, monospace;
+  font-family: 'Cascadia Mono', Consolas, monospace;
   font-size: 0.78rem;
 }
 
@@ -329,7 +328,7 @@ h2 {
 
 .task-id {
   color: #64748b;
-  font-family: "Cascadia Mono", Consolas, monospace;
+  font-family: 'Cascadia Mono', Consolas, monospace;
   font-size: 0.82rem;
 }
 

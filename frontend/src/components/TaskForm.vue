@@ -21,11 +21,14 @@ function submit() {
   })
 }
 
-watch(() => props.resetToken, () => {
-  // API成功後だけ親から通知を受け、入力内容を安全に初期化する。
-  title.value = ''
-  description.value = ''
-})
+watch(
+  () => props.resetToken,
+  () => {
+    // API成功後だけ親から通知を受け、入力内容を安全に初期化する。
+    title.value = ''
+    description.value = ''
+  }
+)
 </script>
 
 <template>
@@ -36,7 +39,13 @@ watch(() => props.resetToken, () => {
     </label>
     <label class="field">
       <span class="label">説明</span>
-      <textarea v-model="description" class="textarea" rows="3" maxlength="1000" placeholder="任意: 確認観点や補足を入力" />
+      <textarea
+        v-model="description"
+        class="textarea"
+        rows="3"
+        maxlength="1000"
+        placeholder="任意: 確認観点や補足を入力"
+      />
     </label>
     <div class="actions">
       <button type="submit" class="button" :disabled="saving">追加</button>

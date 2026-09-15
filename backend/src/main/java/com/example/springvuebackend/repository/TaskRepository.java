@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    // 一覧画面で新しく登録したタスクを上に出すため、作成日時の降順で取得する。
-    List<Task> findAllByOrderByCreatedAtDesc();
+  // 一覧画面で新しく登録したタスクを上に出すため、作成日時の降順で取得する。
+  List<Task> findAllByOrderByCreatedAtDesc();
 }

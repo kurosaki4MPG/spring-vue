@@ -200,7 +200,13 @@ describe('App', () => {
       if ((init?.method ?? 'GET') === 'POST') {
         return jsonResponse({}, { status: 500 })
       }
-      return jsonResponse(input.toString() === '/api/health' ? { status: 'ok' } : input.toString() === '/api/message' ? { message: 'message' } : [])
+      return jsonResponse(
+        input.toString() === '/api/health'
+          ? { status: 'ok' }
+          : input.toString() === '/api/message'
+            ? { message: 'message' }
+            : []
+      )
     })
     vi.stubGlobal('fetch', fetchMock)
 
@@ -213,7 +219,12 @@ describe('App', () => {
   })
 
   it('通信エラーには再読込を案内する', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('Failed to fetch') }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('Failed to fetch')
+      })
+    )
 
     const wrapper = await mountApp()
     expect(wrapper.find('.alert--error').text()).toContain('再読込してください。')

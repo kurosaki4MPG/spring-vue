@@ -5,7 +5,7 @@
     // 型チェックの増分情報をnode_modules配下に置き、作業ツリーを汚さない。
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     // Viteのimport.meta.envとVitestのテストAPIをTypeScriptで解決できるようにする。
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals"]
   },
   // Vue単一ファイルコンポーネントとTypeScriptソースを型チェック対象にする。
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]

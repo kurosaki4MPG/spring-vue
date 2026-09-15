@@ -8,6 +8,117 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - `frontend/`: Vue 3 + Vite SPA
 - `compose.yml`: PostgreSQL、Backend、Frontend をまとめて起動する Docker Compose 設定
 
+## Frontend構成
+
+### UIコンポーネント構成
+
+Frontendは、`App.vue`が画面全体の状態と通知を管理し、入力・一覧・削除確認を子コンポーネントへ委譲する構成です。子コンポーネントからの操作イベントを`App.vue`が受け取り、API処理後に一覧を更新します。
+
+```mermaid
+flowchart TD
+    App[App.vue<br/>画面状態・通知・集計]
+    Form[TaskForm.vue<br/>新規タスク入力]
+    List[TaskList.vue<br/>一覧・編集・完了切替]
+    Dialog[DeleteConfirmDialog.vue<br/>削除確認]
+    Api[services/taskApi.ts<br/>API通信・HTTPエラー変換]
+    Backend[Spring Boot API<br/>/api/health /api/message /api/tasks]
+
+    App -->|props: saving, resetToken| Form
+    Form -->|create / invalid| App
+    App -->|props: tasks, saving| List
+    List -->|toggle / update / delete| App
+    List --> Dialog
+    Dialog -->|confirm / cancel| List
+    App -->|get/create/update/delete| Api
+    Api -->|HTTP| Backend
+```
+
+### ファイル構成と責務
+
+```text
+frontend/
+├── src/
+│   ├── App.vue                         # 画面全体の状態管理と子コンポーネント連携
+│   ├── main.ts                         # Vueアプリケーションの起動
+│   ├── style.css                       # 画面全体のスタイル
+│   ├── components/
+│   │   ├── TaskForm.vue                # 新規タスク入力・入力イベント
+│   │   ├── TaskForm.test.ts            # TaskForm単体テスト
+│   │   ├── TaskList.vue                # 一覧・編集・完了切替・削除操作
+│   │   ├── TaskList.test.ts            # TaskList単体テスト
+│   │   ├── DeleteConfirmDialog.vue     # 削除確認ダイアログ
+│   │   └── DeleteConfirmDialog.test.ts # ダイアログ単体テスト
+│   └── services/
+│       ├── taskApi.ts                  # API通信・型定義・HTTPエラー変換
+│       └── taskApi.test.ts             # APIクライアント単体テスト
+├── e2e/                                # Playwright E2Eテスト
+├── Dockerfile                          # Docker版Frontendイメージ
+├── package.json                        # npmスクリプトと依存関係
+└── vite.config.ts                      # Vite・Vitest・API Proxy設定
+```
+
+責務の分離方針:
+
+- `App.vue`: API処理の結果、通知、一覧、集計値など画面全体の状態を管理
+- `components/`: ユーザー操作と表示を担当し、APIの詳細を直接持たない
+- `services/taskApi.ts`: Backend APIとの通信とHTTPエラーの共通変換を担当
+
+### Backendファイル構成
+
+Spring Boot Backendは、Controller・Service・Repository・Entity・DTO・例外処理・設定をパッケージごとに分離しています。
+
+```text
+backend/
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/springvuebackend/
+│   │   │   ├── SpringVueBackendApplication.java  # Spring Bootアプリケーション起動
+│   │   │   ├── config/
+│   │   │   │   ├── AppProperties.java            # 独自設定値のバインディング
+│   │   │   │   ├── DataInitializer.java          # 初期データ投入
+│   │   │   │   └── WebConfig.java                # CORSなどWeb設定
+│   │   │   ├── controller/
+│   │   │   │   ├── ApiController.java            # ヘルスチェック・メッセージAPI
+│   │   │   │   └── TaskController.java           # タスクCRUD API
+│   │   │   ├── dto/
+│   │   │   │   ├── HealthResponse.java           # ヘルスチェック応答
+│   │   │   │   ├── MessageResponse.java          # メッセージ応答
+│   │   │   │   ├── TaskRequest.java               # タスク登録・更新リクエスト
+│   │   │   │   └── TaskResponse.java              # タスク応答
+│   │   │   ├── entity/
+│   │   │   │   └── Task.java                     # JPAタスクエンティティ
+│   │   │   ├── exception/
+│   │   │   │   ├── ApiExceptionHandler.java      # API例外の共通変換
+│   │   │   │   └── ResourceNotFoundException.java# リソース未検出例外
+│   │   │   ├── repository/
+│   │   │   │   └── TaskRepository.java           # TaskのDBアクセス
+│   │   │   └── service/
+│   │   │       └── TaskService.java              # タスク業務ロジック
+│   │   └── resources/
+│   │       └── application.yml                  # DB・サーバー・独自設定
+│   └── test/java/com/example/springvuebackend/
+│       ├── SpringVueBackendApplicationTests.java # コンテキスト起動テスト
+│       └── controller/
+│           ├── ApiControllerTest.java            # API状態・メッセージテスト
+│           └── TaskControllerTest.java           # タスクCRUD・入力検証テスト
+├── .mvn/wrapper/                                 # Maven Wrapper設定
+├── Dockerfile                                    # Backend Dockerイメージ
+├── mvnw / mvnw.cmd                               # Maven Wrapper実行スクリプト
+└── pom.xml                                       # Maven依存関係・ビルド設定
+```
+
+Backendの処理は、次の流れで分担します。
+
+```mermaid
+flowchart LR
+    Request[HTTPリクエスト] --> Controller[Controller<br/>API受付]
+    Controller --> Service[Service<br/>業務ロジック]
+    Service --> Repository[Repository<br/>DBアクセス]
+    Repository --> Entity[Entity<br/>Task]
+    Controller --> DTO[DTO<br/>入出力形式]
+    Controller --> Exception[Exception Handler<br/>エラー応答]
+```
+
 ## 使用ソフトウェア
 
 ### ローカル検証済み環境
@@ -29,6 +140,9 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - H2 Database: 2.4.240
 - PostgreSQL JDBC Driver: 42.7.13
 - Build tool: Maven Wrapper（Maven 3.9.11）
+- Spotless Maven Plugin: 2.44.4
+- google-java-format: 1.25.2
+- ArchUnit: 1.4.1（テストスコープ）
 
 直接利用している Spring Boot starter:
 
@@ -36,6 +150,12 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - `spring-boot-starter-data-jpa`
 - `spring-boot-starter-validation`
 - `spring-boot-starter-test`
+
+直接利用しているSpring Boot starter以外の依存関係:
+
+- `com.h2database:h2`（runtime）: ローカル起動とテスト用のインメモリDB
+- `org.postgresql:postgresql`（runtime）: Docker Compose用PostgreSQL JDBCドライバ
+- `spring-boot-configuration-processor`（optional）: `application.yml`の独自プロパティメタデータ生成
 
 ### Frontend
 
@@ -48,6 +168,12 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 - `@vue/test-utils`: 2.5.0
 - happy-dom: 20.14.0
 - `vue-tsc`: 3.3.11
+- ESLint: 10.10.0
+- `@eslint/js`: 10.0.1
+- `typescript-eslint`: 8.70.0
+- `eslint-plugin-vue`: 10.11.0
+- `eslint-config-prettier`: 10.1.8
+- Prettier: 3.9.6
 
 ### Docker / Compose
 
@@ -56,8 +182,9 @@ Spring Boot + Vue の CRUD サンプルです。ローカル開発では H2、Do
 確認済み Docker 関連ソフトウェア:
 
 - Docker CLI: 29.7.2
+- Docker daemon: 29.1.3
 - Docker Compose plugin: v5.5.1
-- Docker daemon: `tcp://127.0.0.1:2375` 経由で接続確認済み
+- Docker daemon接続先: `tcp://127.0.0.1:2375`
 
 過去に発生した Frontend image build 失敗時のエラー:
 
@@ -74,18 +201,21 @@ Compose / Dockerfile で指定しているイメージ:
 
 ## Runtime
 
-### ローカル起動
+### 非Docker起動版
 
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:8080`
-- Vite proxy: `/api` -> `http://localhost:8080`
+- Vite proxy: `/api` -> `http://localhost:8080`（FrontendもホストOS上で起動する場合）
+- Database: H2 in-memory
 
-### Docker Compose 起動
+### Docker起動版
 
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:8080`
 - PostgreSQL: `localhost:5432`
-- Vite proxy in container: `/api` -> `http://backend:8080`
+- Vite proxy in container: `/api` -> `http://backend:8080`（Compose内のBackend）
+
+Backendを非Dockerで起動し、FrontendだけをDockerで起動する場合は、Compose内の`backend`へ接続できないため502になります。その構成では`VITE_API_PROXY_TARGET=http://host.docker.internal:8080`への変更が必要です。
 
 PostgreSQL 接続情報:
 
@@ -96,20 +226,35 @@ PostgreSQL 接続情報:
 
 ## 起動手順
 
-### Backend only
+### 非Docker起動版
 
-```bash
+BackendをホストOS上で起動します。
+
+```powershell
 cd backend
-./mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
-### Frontend only
+別のターミナルでFrontendをホストOS上から起動します。
 
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
+
+この構成ではFrontendのVite Proxyが`http://localhost:8080`へ接続し、BackendはH2を使用します。
+
+### Docker起動版
+
+Docker daemonを起動し、リポジトリルートから実行します。
+
+```powershell
+$env:DOCKER_HOST = "tcp://127.0.0.1:2375"
+docker compose up -d --build
+```
+
+この構成ではFrontend・Backend・PostgreSQLがDocker Compose内で動作します。FrontendのVite Proxyは`http://backend:8080`へ接続します。
 
 ## テスト実行
 
@@ -120,6 +265,13 @@ npm run dev
 ```powershell
 cd backend
 .\mvnw.cmd test
+```
+
+Spotlessを含むCI相当のBackend検査を実行する場合:
+
+```powershell
+cd backend
+.\mvnw.cmd --batch-mode verify
 ```
 
 確認範囲:
@@ -134,15 +286,22 @@ cd backend
 - `DELETE /api/tasks/{id}`
 - 必須タイトルのバリデーションエラー
 - 存在しないタスクIDの404
+- ArchUnitによるController・Service・Repository・DTOの依存方向
 
 ### Frontend
 
 ```bash
 cd frontend
 npm run test
+npm run format:check
+npm run lint
 npm run typecheck
 npm run build
 ```
+
+コードを整形する場合は`npm run format`を実行します。`npm run format:check`はPrettier差分を検出し、`npm run lint`はESLintとVue/TypeScript向けルールを検査します。
+
+Frontendの`App.vue`とUIコンポーネントから`fetch`を直接呼び出すこともESLintで禁止し、API通信を`src/services/taskApi.ts`へ集約します。
 
 確認範囲:
 
@@ -197,8 +356,10 @@ GitHub Actions 用のCI設定を `.github/workflows/ci.yml` に追加してい�
 
 実行内容:
 
-- Backend: Java 21 / Maven cache / `bash ./mvnw --batch-mode test`（Maven 3.9.11）
+- Backend: Java 21 / Maven cache / `bash ./mvnw --batch-mode verify`（Maven 3.9.11、Spotless検査を含む）
 - Frontend: Node.js 22 / npm cache / `npm ci`
+- Frontend: `npm run format:check`
+- Frontend: `npm run lint`
 - Frontend: `npm run test`
 - Frontend: `npm run typecheck`
 - Frontend: `npm run build`
@@ -237,7 +398,7 @@ chmod +x scripts/run-ci-local.sh
 - [Backend API仕様書](docs/backend-api.md)
 - [Frontend API連携仕様書](docs/frontend-api.md)
 
-### Docker Compose
+## Docker操作
 
 `docker` が PATH に通っている場合:
 
@@ -294,7 +455,7 @@ docker compose down -v
 
 ## DB 設定
 
-通常のローカル起動では H2 を使います。環境変数を指定すると PostgreSQL へ切り替わります。
+通常のローカル起動とBackendテストでは、外部DBを必要としないH2インメモリDBを使います。`SPRING_DATASOURCE_*` 環境変数を指定すると、同じSpring BootアプリケーションをPostgreSQLへ切り替えられます。Docker Composeではこれらの環境変数を設定済みです。
 
 - `SPRING_DATASOURCE_URL`
 - `SPRING_DATASOURCE_DRIVER_CLASS_NAME`
@@ -302,6 +463,14 @@ docker compose down -v
 - `SPRING_DATASOURCE_PASSWORD`
 - `SPRING_JPA_HIBERNATE_DDL_AUTO`
 - `APP_CORS_ALLOWED_ORIGIN`
+
+デフォルトのローカルDB設定:
+
+- JDBC URL: `jdbc:h2:mem:springvuedb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false`
+- Driver: `org.h2.Driver`
+- DDL mode: `create-drop`
+
+したがって、H2は削除されておらず、ローカル開発・Backendテストで現在も使用しています。一方、Docker ComposeのBackendはPostgreSQL JDBC URLと`ddl-auto=update`を受け取ります。
 
 Docker Compose では以下の値を backend に渡しています。
 

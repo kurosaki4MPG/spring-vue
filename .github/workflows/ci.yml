@@ -30,7 +30,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
-        run: bash ./mvnw --batch-mode test
+        run: bash ./mvnw --batch-mode verify
 
   frontend:
     name: Frontend
@@ -50,6 +50,14 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+
+      - name: Check frontend format
+        working-directory: frontend
+        run: npm run format:check
+
+      - name: Run frontend lint
+        working-directory: frontend
+        run: npm run lint
 
       - name: Run frontend tests
         working-directory: frontend
